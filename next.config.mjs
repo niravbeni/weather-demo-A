@@ -11,6 +11,10 @@ const nextConfig = {
       },
     ],
   },
+  // Explicitly define environment variables for server components
+  env: {
+    OPENWEATHER_API_KEY: process.env.OPENWEATHER_API_KEY,
+  }
 };
 
 export default nextConfig; 

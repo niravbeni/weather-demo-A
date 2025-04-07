@@ -7,6 +7,14 @@ export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const location = searchParams.get('location');
 
+  // Debug: Check if API key is defined
+  if (!API_KEY) {
+    return NextResponse.json(
+      { error: 'API key is not configured' },
+      { status: 500 }
+    );
+  }
+
   if (!location) {
     return NextResponse.json(
       { error: 'Location parameter is required' },
@@ -16,12 +24,19 @@ export async function GET(request: Request) {
 
   try {
     // Fetch current weather data
-    const weatherResponse = await fetch(
-      `${BASE_URL}/weather?q=${location}&units=metric&appid=${API_KEY}`
-    );
+    const apiUrl = `${BASE_URL}/weather?q=${location}&units=metric&appid=${API_KEY}`;
+    
+    // Debug: Log URL to Vercel logs (sensitive data, but for debugging only)
+    console.log(`Fetching weather from: ${apiUrl}`);
+    
+    const weatherResponse = await fetch(apiUrl);
+    
+    // Debug: Log response status
+    console.log(`Weather API response status: ${weatherResponse.status}`);
     
     if (!weatherResponse.ok) {
       const errorData = await weatherResponse.json();
+      console.error('Weather API error:', errorData);
       return NextResponse.json(
         { error: errorData.message || 'Failed to fetch weather data' },
         { status: weatherResponse.status }
